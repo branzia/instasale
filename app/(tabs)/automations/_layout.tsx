@@ -26,8 +26,8 @@ function BuilderBackButton() {
 }
 
 /**
- * Automations tab as a small stack (mirrors leads/, catalog/) — index is the
- * list, comment-builder/dm-builder are the "Go Live" rule builders (added
+ * Automations tab as a small stack (mirrors leads/) — index is the list,
+ * comment-builder/dm-builder are the "Go Live" rule builders (added
  * 2026-09, mirroring the web's AutomationSetup/DmAutomationBuilder). Both
  * builder screens get a larger header title than the app's other Stack
  * screens (they're full multi-step flows, not a small detail/edit form) and

@@ -7,14 +7,25 @@ import { ui } from '@/config';
 // convention already used in the sibling Merchant app's tab bar
 // (app/(tabs)/_layout.tsx there uses the same `focused ? on : off` shape).
 const ICONS: Record<string, { on: keyof typeof Ionicons.glyphMap; off: keyof typeof Ionicons.glyphMap }> = {
-  index: { on: 'home', off: 'home-outline' },
+  home: { on: 'home', off: 'home-outline' },
   posts: { on: 'camera', off: 'camera-outline' },
   automations: { on: 'flash', off: 'flash-outline' },
   leads: { on: 'document-text', off: 'document-text-outline' },
-  catalog: { on: 'grid', off: 'grid-outline' },
-  settings: { on: 'settings', off: 'settings-outline' },
 };
 
+/**
+ * Tab bar reduced from 6 to 4 items, 2026-09-09 (explicit user call): Home,
+ * Posts & Reels, Automations, Leads. Settings and Catalog didn't survive as
+ * tabs, but neither got inlined into another tab's body either (an earlier
+ * pass tried folding Catalog into Automations as a Segment and Settings'
+ * destructive actions — Disconnect Instagram, Sign Out — straight into
+ * Home's scroll; both were explicit user corrections). Instead both are one
+ * tap away from Home, behind small icon buttons in its header — see
+ * home/index.tsx, home/catalog.tsx, home/account-settings.tsx, and
+ * CLAUDE.md's footer-reduction note for the full reasoning. That's also why
+ * Home is a folder (`home/`) with its own Stack now, instead of the flat
+ * `index.tsx` it used to be — the icons need somewhere to push to.
+ */
 export default function TabsLayout() {
   const insets = useSafeAreaInsets();
   // Taller footer per explicit user call (2026-09-09) — plain Expo Router's
@@ -42,12 +53,10 @@ export default function TabsLayout() {
         },
       })}
     >
-      <Tabs.Screen name="index" options={{ title: 'Home' }} />
+      <Tabs.Screen name="home" options={{ title: 'Home' }} />
       <Tabs.Screen name="posts" options={{ title: 'Posts & Reels' }} />
       <Tabs.Screen name="automations" options={{ title: 'Automations' }} />
       <Tabs.Screen name="leads" options={{ title: 'Leads' }} />
-      <Tabs.Screen name="catalog" options={{ title: 'Catalog' }} />
-      <Tabs.Screen name="settings" options={{ title: 'Settings' }} />
     </Tabs>
   );
 }

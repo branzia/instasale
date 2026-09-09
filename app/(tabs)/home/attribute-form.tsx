@@ -10,7 +10,14 @@ import { ui } from '@/config';
 import * as api from '@/services/api';
 import { confirmDelete } from '@/utils/confirm';
 
-/** Create/edit a Catalog attribute — mirrors AttributeResource's form (name, values, is_active) exactly. `?id=` present means edit. */
+/**
+ * Create/edit a Catalog attribute — mirrors AttributeResource's form (name,
+ * values, is_active) exactly. `?id=` present means edit.
+ *
+ * Lives under home/ (moved from the now-removed catalog/ tab, 2026-09-09
+ * footer reduction — Catalog is reached from Home's basket icon now, see
+ * home/index.tsx, home/catalog.tsx, and CLAUDE.md).
+ */
 export default function AttributeForm() {
   const { id } = useLocalSearchParams<{ id?: string }>();
   const isEdit = !!id;

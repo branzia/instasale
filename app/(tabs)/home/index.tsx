@@ -22,11 +22,19 @@ type RecentOrder = {
  * Home — connection-status hero card (2026-09, explicit user call: no
  * stats/counters on the mobile dashboard — the old 4 StatCards backed by
  * Api\Instagram\DashboardController were removed along with that
- * controller) plus, added 2026-09-09, a "Recent Orders" widget (latest 5
- * from GET /orders, same shape/row look as the Orders segment of the
- * Leads+Orders tab) to fill what was otherwise dead space below the card.
- * This is a widget, not a rebuild of that screen — no pagination, no
- * pull-to-refresh, just "View all" through to the real Orders segment.
+ * controller) plus a "Recent Orders" widget (latest 5 from GET /orders,
+ * same shape/row look as the Orders segment of the Leads+Orders tab), added
+ * 2026-09-09 to fill what was otherwise dead space below the card.
+ *
+ * As of 2026-09-09's footer reduction (explicit user call: cut the tab bar
+ * from 6 to 4 — see CLAUDE.md), the standalone Settings and Catalog tabs
+ * are gone. Neither was inlined into this screen's scrollable body —
+ * explicit user call: a destructive action (Disconnect Instagram, Sign
+ * Out) sitting in a scrolling feed risks an accidental tap. Instead both
+ * live one tap away, behind the two small icon buttons in the header
+ * (Catalog's basket icon, Settings' gear icon) — this tab is a stack now
+ * (see _layout.tsx) precisely so those can be pushed screens
+ * (home/catalog.tsx, home/account-settings.tsx) rather than sections here.
  *
  * Redesigned 2026-09-09: the connected state is the "everything's working"
  * happy path, so it gets the brand-gradient hero treatment (previously the
@@ -60,8 +68,28 @@ export default function Home() {
   return (
     <SafeAreaView className="flex-1 bg-white" edges={['top']}>
       <ScrollView className="px-6 pt-4">
-        <Text className="text-gray-400 text-sm">Welcome back</Text>
-        <Text className="text-2xl font-bold text-gray-900 mb-6">{account?.name ?? 'there'} 👋</Text>
+        <View className="flex-row items-start justify-between mb-6">
+          <View>
+            <Text className="text-gray-400 text-sm">Welcome back</Text>
+            <Text className="text-2xl font-bold text-gray-900">{account?.name ?? 'there'} 👋</Text>
+          </View>
+          <View className="flex-row gap-2">
+            <Pressable
+              onPress={() => router.push('/(tabs)/home/catalog')}
+              hitSlop={8}
+              className="w-10 h-10 rounded-full bg-gray-100 items-center justify-center"
+            >
+              <Ionicons name="basket-outline" size={18} color={ui.placeholderText} />
+            </Pressable>
+            <Pressable
+              onPress={() => router.push('/(tabs)/home/account-settings')}
+              hitSlop={8}
+              className="w-10 h-10 rounded-full bg-gray-100 items-center justify-center"
+            >
+              <Ionicons name="settings-outline" size={18} color={ui.placeholderText} />
+            </Pressable>
+          </View>
+        </View>
 
         {isInstagramConnected ? (
           <LinearGradient
@@ -91,7 +119,7 @@ export default function Home() {
         )}
 
         {isInstagramConnected && (
-          <View className="mt-8">
+          <View className="mt-8 mb-10">
             <View className="flex-row justify-between items-center mb-3">
               <Text className="text-lg font-bold text-gray-900">Recent Orders</Text>
               <Pressable onPress={() => router.push('/(tabs)/leads?tab=orders')}>

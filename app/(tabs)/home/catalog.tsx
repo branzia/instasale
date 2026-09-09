@@ -29,8 +29,12 @@ type Attribute = {
 /**
  * Catalog — Products & Attributes, full create/edit/delete, mirroring
  * App\Filament\Instagram\Resources\{ProductResource,AttributeResource}
- * exactly. Same shared Segment/EmptyState/Card as the Leads+Orders screen
- * (previously two byte-identical local `Segment`/`EmptyState` copies).
+ * exactly. Same shared Segment/EmptyState/Card as the Leads+Orders screen.
+ *
+ * Reached from Home's basket icon (2026-09-09 footer reduction — Catalog
+ * lost its own tab; see home/index.tsx and CLAUDE.md's footer-reduction
+ * note). Content is unchanged from the old catalog/ tab, just relocated —
+ * product-form.tsx/attribute-form.tsx now live alongside this file.
  */
 export default function Catalog() {
   const [segment, setSegment] = useState<'products' | 'attributes'>('products');
@@ -68,7 +72,7 @@ export default function Catalog() {
         title="Catalog"
         action={{
           icon: 'add',
-          onPress: () => router.push(segment === 'products' ? '/(tabs)/catalog/product-form' : '/(tabs)/catalog/attribute-form'),
+          onPress: () => router.push(segment === 'products' ? '/(tabs)/home/product-form' : '/(tabs)/home/attribute-form'),
         }}
       />
 
@@ -105,7 +109,7 @@ export default function Catalog() {
               contentContainerStyle={{ padding: 12 }}
               refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={ui.accent} />}
               renderItem={({ item }) => (
-                <Card onPress={() => router.push(`/(tabs)/catalog/product-form?id=${item.id}`)} className="flex-row justify-between items-center">
+                <Card onPress={() => router.push(`/(tabs)/home/product-form?id=${item.id}`)} className="flex-row justify-between items-center">
                   <View className="flex-1 mr-2">
                     <Text className="font-semibold text-gray-900" numberOfLines={1}>{item.name}</Text>
                     {(item.bulk_pricing?.length > 0 || (item.attributes?.length ?? 0) > 0) && (
@@ -133,7 +137,7 @@ export default function Catalog() {
               contentContainerStyle={{ padding: 12 }}
               refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={ui.accent} />}
               renderItem={({ item }) => (
-                <Card onPress={() => router.push(`/(tabs)/catalog/attribute-form?id=${item.id}`)} className="flex-row justify-between items-center">
+                <Card onPress={() => router.push(`/(tabs)/home/attribute-form?id=${item.id}`)} className="flex-row justify-between items-center">
                   <View className="flex-1 mr-2">
                     <Text className="font-semibold text-gray-900" numberOfLines={1}>{item.name}</Text>
                     <Text className="text-gray-500 text-sm mt-0.5" numberOfLines={1}>

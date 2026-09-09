@@ -9,7 +9,16 @@ import { ui } from '@/config';
 import { useAuth } from '@/context/AuthContext';
 import * as api from '@/services/api';
 
-export default function Settings() {
+/**
+ * Account info, Instagram disconnect, sign out — the former standalone
+ * Settings tab's whole content, unchanged. Reached from Home's gear icon
+ * (2026-09-09 footer reduction) rather than its own tab — see
+ * home/index.tsx and CLAUDE.md's footer-reduction note. Deliberately a
+ * pushed screen, not a section on Home itself: Disconnect/Sign Out are
+ * destructive-ish actions that shouldn't sit in a scrolling feed where a
+ * mis-tap is easy.
+ */
+export default function AccountSettings() {
   const { account, isInstagramConnected, setIsInstagramConnected, signOut } = useAuth();
   const [disconnecting, setDisconnecting] = useState(false);
 

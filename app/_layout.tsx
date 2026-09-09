@@ -50,7 +50,10 @@ function RootLayoutNav() {
     }
 
     if (group === '(auth)' || group === '(onboarding)') {
-      router.replace('/(tabs)');
+      // '(tabs)' has no flat index route since Home became a folder
+      // (`(tabs)/home/`, 2026-09-09 footer reduction — see CLAUDE.md), so
+      // the bare group path no longer resolves; land on Home explicitly.
+      router.replace('/(tabs)/home');
     }
   }, [token, isLoading, isInstagramConnected, segments]);
 

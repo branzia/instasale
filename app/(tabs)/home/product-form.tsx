@@ -44,6 +44,10 @@ function attrsToPayload(attrs: ProductAttr[]) {
  * form (name, price, bulk pricing, is_available) plus its Attributes
  * builder (`_attributes.blade.php`, added here 2026-09 — see
  * components/ProductAttributeCard.tsx). `?id=` present means edit.
+ *
+ * Lives under home/ (moved from the now-removed catalog/ tab, 2026-09-09
+ * footer reduction — Catalog is reached from Home's basket icon now, see
+ * home/index.tsx, home/catalog.tsx, and CLAUDE.md).
  */
 export default function ProductForm() {
   const { id } = useLocalSearchParams<{ id?: string }>();

@@ -436,7 +436,7 @@ export default function CommentBuilder() {
               <Text className="text-gray-400 text-sm text-center py-2 mb-1">You haven't added any products yet.</Text>
             )}
 
-            <Pressable onPress={() => router.push('/(tabs)/catalog/product-form')} className="mt-1">
+            <Pressable onPress={() => router.push('/(tabs)/home/product-form')} className="mt-1">
               <Text className="text-brand-500 font-semibold text-sm">+ Add a new product</Text>
             </Pressable>
           </View>
