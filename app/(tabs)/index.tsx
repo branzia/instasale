@@ -1,0 +1,141 @@
+import { Ionicons } from '@expo/vector-icons';
+import { LinearGradient } from 'expo-linear-gradient';
+import { router, useFocusEffect } from 'expo-router';
+import { useCallback, useState } from 'react';
+import { ActivityIndicator, Pressable, ScrollView, Text, View } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import Card from '@/components/Card';
+import { gradientShort, ui } from '@/config';
+import { useAuth } from '@/context/AuthContext';
+import * as api from '@/services/api';
+
+type RecentOrder = {
+  id: number;
+  customer_name: string;
+  product_name: string;
+  total: string;
+  payment_status: string;
+  payment_gateway: string;
+};
+
+/**
+ * Home — connection-status hero card (2026-09, explicit user call: no
+ * stats/counters on the mobile dashboard — the old 4 StatCards backed by
+ * Api\Instagram\DashboardController were removed along with that
+ * controller) plus, added 2026-09-09, a "Recent Orders" widget (latest 5
+ * from GET /orders, same shape/row look as the Orders segment of the
+ * Leads+Orders tab) to fill what was otherwise dead space below the card.
+ * This is a widget, not a rebuild of that screen — no pagination, no
+ * pull-to-refresh, just "View all" through to the real Orders segment.
+ *
+ * Redesigned 2026-09-09: the connected state is the "everything's working"
+ * happy path, so it gets the brand-gradient hero treatment (previously the
+ * only screen with zero gradient use anywhere). A disconnected state stays
+ * a flat amber warning card on purpose — a problem shouldn't look celebratory.
+ */
+export default function Home() {
+  const { account, isInstagramConnected } = useAuth();
+  const [orders, setOrders] = useState<RecentOrder[]>([]);
+  const [loadingOrders, setLoadingOrders] = useState(true);
+
+  useFocusEffect(
+    useCallback(() => {
+      if (!isInstagramConnected) {
+        setLoadingOrders(false);
+        return;
+      }
+      let cancelled = false;
+      setLoadingOrders(true);
+      api.getSalesOrders().then((res) => {
+        if (cancelled) return;
+        if (res.status === 200) setOrders((res.data?.orders ?? []).slice(0, 5));
+        setLoadingOrders(false);
+      });
+      return () => {
+        cancelled = true;
+      };
+    }, [isInstagramConnected]),
+  );
+
+  return (
+    <SafeAreaView className="flex-1 bg-white" edges={['top']}>
+      <ScrollView className="px-6 pt-4">
+        <Text className="text-gray-400 text-sm">Welcome back</Text>
+        <Text className="text-2xl font-bold text-gray-900 mb-6">{account?.name ?? 'there'} 👋</Text>
+
+        {isInstagramConnected ? (
+          <LinearGradient
+            colors={gradientShort as unknown as [string, string]}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 1 }}
+            style={{ borderRadius: 20, padding: 20 }}
+          >
+            <View className="w-11 h-11 rounded-full bg-white/25 items-center justify-center mb-3">
+              <Ionicons name="checkmark-circle" size={24} color="#fff" />
+            </View>
+            <Text className="font-semibold text-white mb-1">Instagram Connected</Text>
+            <Text className="text-sm text-white/90">
+              You're all set — automations, leads, and orders are syncing normally.
+            </Text>
+          </LinearGradient>
+        ) : (
+          <View className="rounded-2xl p-5 bg-amber-50">
+            <View className="w-11 h-11 rounded-full bg-amber-100 items-center justify-center mb-3">
+              <Ionicons name="alert-circle" size={24} color="#92400E" />
+            </View>
+            <Text className="font-semibold text-amber-900 mb-1">Instagram Not Connected</Text>
+            <Text className="text-sm text-amber-700">
+              Connect your Instagram account from branzia.app/instagram to start receiving comments and DMs.
+            </Text>
+          </View>
+        )}
+
+        {isInstagramConnected && (
+          <View className="mt-8">
+            <View className="flex-row justify-between items-center mb-3">
+              <Text className="text-lg font-bold text-gray-900">Recent Orders</Text>
+              <Pressable onPress={() => router.push('/(tabs)/leads?tab=orders')}>
+                <Text className="text-brand-500 text-sm font-semibold">View all</Text>
+              </Pressable>
+            </View>
+
+            {loadingOrders ? (
+              <ActivityIndicator color={ui.accent} style={{ marginTop: 12 }} />
+            ) : orders.length === 0 ? (
+              <Card>
+                <Text className="text-gray-500 text-sm text-center">
+                  No orders yet — confirmed and paid orders will show up here.
+                </Text>
+              </Card>
+            ) : (
+              orders.map((item) => (
+                <Card key={item.id}>
+                  <View className="flex-row justify-between items-start mb-1">
+                    <Text className="font-semibold text-gray-900 flex-1 mr-2" numberOfLines={1}>
+                      {item.customer_name}
+                    </Text>
+                    {/* India-only for now, same as the rest of Lead to Sale's payment gateways. */}
+                    <Text className="font-semibold text-gray-900">₹{item.total}</Text>
+                  </View>
+                  <Text className="text-gray-500 text-sm mb-2" numberOfLines={1}>
+                    {item.product_name}
+                  </Text>
+                  <View className="flex-row items-center">
+                    <Ionicons
+                      name={item.payment_status === 'paid' ? 'checkmark-circle' : 'time-outline'}
+                      size={13}
+                      color={item.payment_status === 'paid' ? '#065F46' : '#92400E'}
+                    />
+                    <Text className="text-xs text-gray-500 ml-1">
+                      {item.payment_status === 'paid' ? 'Paid' : 'Pending'} · {item.payment_gateway.toUpperCase()}
+                    </Text>
+                  </View>
+                </Card>
+              ))
+            )}
+          </View>
+        )}
+      </ScrollView>
+    </SafeAreaView>
+  );
+}
