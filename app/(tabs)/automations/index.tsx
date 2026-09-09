@@ -30,9 +30,11 @@ const STATUS_LABEL: Record<string, string> = { active: 'Active', paused: 'Paused
 
 function SummaryTile({ icon, label, value }: { icon: keyof typeof Ionicons.glyphMap; label: string; value: number }) {
   return (
-    <View className="bg-gray-50 rounded-2xl p-3 flex-1 mr-2 last:mr-0">
+    <View className="bg-gray-50 rounded-2xl p-3 flex-1">
       <Ionicons name={icon} size={16} color={ui.accent} style={{ marginBottom: 4 }} />
-      <Text className="text-xl font-bold text-gray-900">{value}</Text>
+      <Text className="text-xl font-bold text-gray-900" numberOfLines={1} adjustsFontSizeToFit>
+        {value}
+      </Text>
       <Text className="text-gray-500 text-xs mt-0.5">{label}</Text>
     </View>
   );
@@ -111,11 +113,13 @@ export default function Automations() {
   const createAutomation = () => {
     Alert.alert('Create Automation', 'Reply to comments, or reply to DMs?', [
       { text: 'Cancel', style: 'cancel' },
-      // Smart Automation needs a post to attach to (or "Any post or reel") —
-      // Posts & Reels already offers exactly that picker, mirroring
-      // AllAutomations::createSmartUrl() routing into the post-choosing
-      // page rather than a second, mostly-duplicate chooser screen here.
-      { text: 'Smart Automation', onPress: () => router.push('/(tabs)/posts') },
+      // Smart Automation needs a post to attach to (or "Any post or reel").
+      // Web's AllAutomations::createSmartUrl() routes into the Smart
+      // Automations page, which defaults to "Any post or reel" — go straight
+      // to that scope here too (mediaId=all) instead of bouncing through
+      // Posts & Reels, which still offers its own "Any post or reel" card
+      // for picking a specific post first.
+      { text: 'Smart Automation', onPress: () => router.push('/automations/comment-builder?mediaId=all') },
       { text: 'DM Auto Reply', onPress: () => router.push('/automations/dm-builder') },
     ]);
   };
@@ -133,11 +137,15 @@ export default function Automations() {
       <ScreenHeader title="Automations" action={{ icon: 'add', onPress: createAutomation }} />
 
       {summary && (
-        <View className="flex-row px-6 mb-4">
-          <SummaryTile icon="layers-outline" label="Total" value={summary.total} />
-          <SummaryTile icon="flash" label="Active" value={summary.active} />
-          <SummaryTile icon="pause" label="Paused" value={summary.paused} />
-          <SummaryTile icon="trending-up" label="Triggered" value={summary.triggered} />
+        <View className="px-6 mb-4">
+          <View className="flex-row gap-3 mb-3">
+            <SummaryTile icon="layers-outline" label="Total" value={summary.total} />
+            <SummaryTile icon="flash" label="Active" value={summary.active} />
+          </View>
+          <View className="flex-row gap-3">
+            <SummaryTile icon="pause" label="Paused" value={summary.paused} />
+            <SummaryTile icon="trending-up" label="Triggered" value={summary.triggered} />
+          </View>
         </View>
       )}
 

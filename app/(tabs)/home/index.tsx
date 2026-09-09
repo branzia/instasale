@@ -18,6 +18,31 @@ type RecentOrder = {
   payment_gateway: string;
 };
 
+function LinkRow({
+  icon,
+  title,
+  description,
+  onPress,
+}: {
+  icon: keyof typeof Ionicons.glyphMap;
+  title: string;
+  description: string;
+  onPress: () => void;
+}) {
+  return (
+    <Card onPress={onPress} className="flex-row items-center">
+      <View className="w-11 h-11 rounded-full bg-brand-50 items-center justify-center mr-3">
+        <Ionicons name={icon} size={20} color={ui.accent} />
+      </View>
+      <View className="flex-1 mr-2">
+        <Text className="font-semibold text-gray-900 mb-0.5">{title}</Text>
+        <Text className="text-gray-500 text-xs">{description}</Text>
+      </View>
+      <Ionicons name="chevron-forward" size={18} color={ui.placeholderText} />
+    </Card>
+  );
+}
+
 /**
  * Home — connection-status hero card (2026-09, explicit user call: no
  * stats/counters on the mobile dashboard — the old 4 StatCards backed by
@@ -31,10 +56,13 @@ type RecentOrder = {
  * are gone. Neither was inlined into this screen's scrollable body —
  * explicit user call: a destructive action (Disconnect Instagram, Sign
  * Out) sitting in a scrolling feed risks an accidental tap. Instead both
- * live one tap away, behind the two small icon buttons in the header
- * (Catalog's basket icon, Settings' gear icon) — this tab is a stack now
- * (see _layout.tsx) precisely so those can be pushed screens
- * (home/catalog.tsx, home/account-settings.tsx) rather than sections here.
+ * live one tap away, via the two `LinkRow`s just under the connection hero
+ * — moved there from a bare icon pair in the header (also an explicit user
+ * call: two unlabeled icons next to the name weren't discoverable, so each
+ * now carries a title + one-line description of what it actually does).
+ * This tab is a stack (see _layout.tsx) precisely so these can be pushed
+ * screens (home/catalog.tsx, home/account-settings.tsx) rather than
+ * sections here.
  *
  * Redesigned 2026-09-09: the connected state is the "everything's working"
  * happy path, so it gets the brand-gradient hero treatment (previously the
@@ -68,28 +96,8 @@ export default function Home() {
   return (
     <SafeAreaView className="flex-1 bg-white" edges={['top']}>
       <ScrollView className="px-6 pt-4">
-        <View className="flex-row items-start justify-between mb-6">
-          <View>
-            <Text className="text-gray-400 text-sm">Welcome back</Text>
-            <Text className="text-2xl font-bold text-gray-900">{account?.name ?? 'there'} 👋</Text>
-          </View>
-          <View className="flex-row gap-2">
-            <Pressable
-              onPress={() => router.push('/(tabs)/home/catalog')}
-              hitSlop={8}
-              className="w-10 h-10 rounded-full bg-gray-100 items-center justify-center"
-            >
-              <Ionicons name="basket-outline" size={18} color={ui.placeholderText} />
-            </Pressable>
-            <Pressable
-              onPress={() => router.push('/(tabs)/home/account-settings')}
-              hitSlop={8}
-              className="w-10 h-10 rounded-full bg-gray-100 items-center justify-center"
-            >
-              <Ionicons name="settings-outline" size={18} color={ui.placeholderText} />
-            </Pressable>
-          </View>
-        </View>
+        <Text className="text-gray-400 text-sm">Welcome back</Text>
+        <Text className="text-2xl font-bold text-gray-900 mb-6">{account?.name ?? 'there'} 👋</Text>
 
         {isInstagramConnected ? (
           <LinearGradient
@@ -118,8 +126,23 @@ export default function Home() {
           </View>
         )}
 
+        <View className="mt-6">
+          <LinkRow
+            icon="basket-outline"
+            title="Catalog"
+            description="Manage the products, pricing, bulk tiers, and buyer attributes your DM chatbot can sell."
+            onPress={() => router.push('/(tabs)/home/catalog')}
+          />
+          <LinkRow
+            icon="settings-outline"
+            title="Settings"
+            description="Account details, Instagram connection status, and sign out."
+            onPress={() => router.push('/(tabs)/home/account-settings')}
+          />
+        </View>
+
         {isInstagramConnected && (
-          <View className="mt-8 mb-10">
+          <View className="mt-2 mb-10">
             <View className="flex-row justify-between items-center mb-3">
               <Text className="text-lg font-bold text-gray-900">Recent Orders</Text>
               <Pressable onPress={() => router.push('/(tabs)/leads?tab=orders')}>
@@ -132,7 +155,7 @@ export default function Home() {
             ) : orders.length === 0 ? (
               <Card>
                 <Text className="text-gray-500 text-sm text-center">
-                  No orders yet — confirmed and paid orders will show up here.
+                  No orders yet — your recent orders will show up here.
                 </Text>
               </Card>
             ) : (

@@ -236,15 +236,20 @@ export const deleteAttribute = (id: number) => instagramRequest('DELETE', `/attr
 // ─── Leads (Lead to Sale) ───────────────────────────────────────────────────
 // Backend: Api\Instagram\LeadController — read-only (Leads are only ever
 // created from the dashboard or the DM chatbot, never the mobile app).
+// Cursor-paginated the same way getInstagramMedia() is — `after` is the last
+// lead id seen, response carries `next_cursor`/`has_more`/`total`.
 
-export const getLeads = () => instagramRequest('GET', '/leads');
+export const getLeads = (after?: number) =>
+  instagramRequest('GET', after ? `/leads?after=${after}` : '/leads');
 
 export const getLead = (id: number) => instagramRequest('GET', `/leads/${id}`);
 
 // ─── Sales Orders ───────────────────────────────────────────────────────────
-// Backend: Api\Instagram\SalesOrderController — read-only, same reasoning as Leads.
+// Backend: Api\Instagram\SalesOrderController — read-only, same reasoning
+// and same cursor-pagination shape as Leads above.
 
-export const getSalesOrders = () => instagramRequest('GET', '/orders');
+export const getSalesOrders = (after?: number) =>
+  instagramRequest('GET', after ? `/orders?after=${after}` : '/orders');
 
 // ─── Push token ─────────────────────────────────────────────────────────────
 // Uses Expo push tokens (works inside Expo Go), not a raw FCM device

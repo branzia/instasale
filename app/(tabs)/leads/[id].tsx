@@ -1,9 +1,10 @@
-import { useLocalSearchParams } from 'expo-router';
+import { router, useLocalSearchParams } from 'expo-router';
 import { useEffect, useState } from 'react';
 import { ActivityIndicator, ScrollView, Share, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import DetailRow from '@/components/DetailRow';
 import GradientButton from '@/components/GradientButton';
+import ScreenHeader from '@/components/ScreenHeader';
 import StatusBadge from '@/components/StatusBadge';
 import { ui } from '@/config';
 import * as api from '@/services/api';
@@ -46,16 +47,22 @@ export default function LeadDetail() {
 
   if (loading) {
     return (
-      <SafeAreaView className="flex-1 bg-white items-center justify-center">
-        <ActivityIndicator color={ui.accent} />
+      <SafeAreaView className="flex-1 bg-white" edges={['top', 'bottom']}>
+        <ScreenHeader title="Lead" onBack={() => router.back()} />
+        <View className="flex-1 items-center justify-center">
+          <ActivityIndicator color={ui.accent} />
+        </View>
       </SafeAreaView>
     );
   }
 
   if (!lead) {
     return (
-      <SafeAreaView className="flex-1 bg-white items-center justify-center">
-        <Text className="text-gray-500">Lead not found.</Text>
+      <SafeAreaView className="flex-1 bg-white" edges={['top', 'bottom']}>
+        <ScreenHeader title="Lead" onBack={() => router.back()} />
+        <View className="flex-1 items-center justify-center">
+          <Text className="text-gray-500">Lead not found.</Text>
+        </View>
       </SafeAreaView>
     );
   }
@@ -63,7 +70,8 @@ export default function LeadDetail() {
   const order = lead.sales_order;
 
   return (
-    <SafeAreaView className="flex-1 bg-white" edges={['bottom']}>
+    <SafeAreaView className="flex-1 bg-white" edges={['top', 'bottom']}>
+      <ScreenHeader title="Lead" onBack={() => router.back()} />
       <ScrollView className="px-5 pt-4">
         <View className="flex-row justify-between items-start mb-1">
           <Text className="text-2xl font-bold text-gray-900 flex-1 mr-2">

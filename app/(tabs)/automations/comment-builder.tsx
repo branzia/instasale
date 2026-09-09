@@ -3,15 +3,17 @@ import * as ImagePicker from 'expo-image-picker';
 import { router, useFocusEffect, useLocalSearchParams } from 'expo-router';
 import { useCallback, useEffect, useState } from 'react';
 import { ActivityIndicator, Alert, Image, Pressable, ScrollView, Text, TextInput, View } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import Checkbox from '@/components/Checkbox';
 import GradientButton from '@/components/GradientButton';
 import RuleCard, { blankRule, RuleState } from '@/components/RuleCard';
+import ScreenHeader from '@/components/ScreenHeader';
 import Segment from '@/components/Segment';
 import SolidButton from '@/components/SolidButton';
-import { ui } from '@/config';
+import { tabBarHeight, ui } from '@/config';
 import * as api from '@/services/api';
 import { confirmDelete } from '@/utils/confirm';
+import { backOrToAutomations } from '@/utils/navigation';
 
 type Step = 'setup' | 'rules' | 'product' | 'advanced';
 type Scope = 'specific_media' | 'all_media';
@@ -100,11 +102,13 @@ function ruleToPayload(r: RuleState, withNameKeywords: boolean) {
   return base;
 }
 
-const STEPS: { value: Step; label: string }[] = [
-  { value: 'setup', label: 'Setup' },
-  { value: 'rules', label: 'Rules' },
-  { value: 'product', label: 'Product' },
-  { value: 'advanced', label: 'Advanced' },
+const STEPS: { value: Step; label: string; icon: { on: keyof typeof Ionicons.glyphMap; off: keyof typeof Ionicons.glyphMap } }[] = [
+  { value: 'setup', label: 'Setup', icon: { on: 'compass', off: 'compass-outline' } },
+  { value: 'rules', label: 'Rules', icon: { on: 'list', off: 'list-outline' } },
+  // Matches Catalog's Products icon (app/(tabs)/home/catalog.tsx) — this
+  // step is literally "pick a catalog product".
+  { value: 'product', label: 'Product', icon: { on: 'basket', off: 'basket-outline' } },
+  { value: 'advanced', label: 'Advanced', icon: { on: 'settings', off: 'settings-outline' } },
 ];
 
 /**
@@ -117,6 +121,7 @@ const STEPS: { value: Step; label: string }[] = [
  */
 export default function CommentBuilder() {
   const { mediaId } = useLocalSearchParams<{ mediaId: string }>();
+  const insets = useSafeAreaInsets();
 
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState<'draft' | 'live' | null>(null);
@@ -299,8 +304,11 @@ export default function CommentBuilder() {
 
   if (loading) {
     return (
-      <SafeAreaView className="flex-1 bg-white items-center justify-center">
-        <ActivityIndicator color={ui.accent} />
+      <SafeAreaView className="flex-1 bg-white" edges={['top']}>
+        <ScreenHeader title="Smart Automation" onBack={backOrToAutomations} />
+        <View className="flex-1 items-center justify-center">
+          <ActivityIndicator color={ui.accent} />
+        </View>
       </SafeAreaView>
     );
   }
@@ -317,10 +325,67 @@ export default function CommentBuilder() {
   };
 
   return (
-    <SafeAreaView className="flex-1 bg-white" edges={['bottom']}>
-      <Segment options={visibleSteps} value={step} onChange={(v) => setStep(v as Step)} />
+    <SafeAreaView className="flex-1 bg-white" edges={['top']}>
+      <ScreenHeader title="Smart Automation" onBack={backOrToAutomations} />
 
-      <ScrollView className="px-6 pt-2" contentContainerStyle={{ paddingBottom: 24 }}>
+      {/* Action bar sits above the step tabs, not the bottom of the scroll
+          content — it stays in the same place on every step no matter how
+          tall that step's content is (Rules in particular can run long once
+          a few keyword rules are expanded), and it's never at risk of
+          ending up hidden behind the keyboard while editing a rule's text
+          fields. Compact buttons since this is a persistent bar, not a
+          screen's one big CTA. */}
+      <View className="px-6 pt-3 pb-3">
+        {(!isFirstStep || !!state.automationId) && (
+          <View className="flex-row items-center justify-between mb-2">
+            {!isFirstStep ? (
+              <Pressable onPress={() => goToStep(-1)} className="flex-row items-center -ml-1 py-1 pr-2" hitSlop={8}>
+                <Ionicons name="chevron-back" size={16} color="#6B7280" />
+                <Text className="text-gray-600 text-sm font-semibold ml-0.5">Back</Text>
+              </Pressable>
+            ) : (
+              <View />
+            )}
+            {!!state.automationId && (
+              <Pressable onPress={remove} disabled={deleting} className="flex-row items-center py-1 pl-2" hitSlop={8}>
+                {deleting ? (
+                  <ActivityIndicator size="small" color="#DC2626" />
+                ) : (
+                  <>
+                    <Ionicons name="trash-outline" size={14} color="#DC2626" />
+                    <Text className="text-red-600 text-xs font-semibold ml-1">Delete</Text>
+                  </>
+                )}
+              </Pressable>
+            )}
+          </View>
+        )}
+        <View className="flex-row gap-2">
+          <View style={{ flex: 1 }}>
+            <SolidButton compact label="Save Draft" onPress={() => save('draft')} loading={saving === 'draft'} disabled={saving !== null} />
+          </View>
+          <View style={{ flex: 1.4 }}>
+            {isLastStep ? (
+              <GradientButton compact label="Go Live" onPress={() => save('active')} loading={saving === 'live'} disabled={saving !== null} />
+            ) : (
+              <GradientButton compact label="Next" icon="arrow-forward" onPress={() => goToStep(1)} disabled={saving !== null} />
+            )}
+          </View>
+        </View>
+      </View>
+
+      {/* Step tabs — same full-width underline 'tabs' Segment variant as
+          Leads & Orders and Catalog's Products/Attributes, rather than the
+          compact pill toggle: these are 4 genuinely distinct steps of one
+          flow, not a 2-way filter. */}
+      <Segment variant="tabs" options={visibleSteps} value={step} onChange={(v) => setStep(v as Step)} />
+
+      {/* This screen sits inside the Automations tab's own stack, so the
+          app's fixed bottom tab bar is still drawn under it — pad the
+          scroll content by that same height (@/config's tabBarHeight, kept
+          in sync with (tabs)/_layout.tsx) so the last rule/field always
+          clears it instead of being cut off behind it. */}
+      <ScrollView className="flex-1 px-6 pt-4" contentContainerStyle={{ paddingBottom: 24 + tabBarHeight(insets.bottom) }} keyboardShouldPersistTaps="handled">
         {step === 'setup' && (
           <View>
             <Text className="text-gray-700 mb-2 font-medium">Where should this automation apply?</Text>
@@ -463,30 +528,6 @@ export default function CommentBuilder() {
             )}
           </View>
         )}
-
-        <View className="mt-6">
-          {!isFirstStep && (
-            <Pressable onPress={() => goToStep(-1)} className="flex-row items-center self-start mb-3">
-              <Ionicons name="chevron-back" size={16} color="#6B7280" />
-              <Text className="text-gray-600 text-sm font-semibold ml-0.5">Back</Text>
-            </Pressable>
-          )}
-
-          {isLastStep ? (
-            <GradientButton label="Go Live" onPress={() => save('active')} loading={saving === 'live'} disabled={saving !== null} />
-          ) : (
-            <GradientButton label="Next" icon="arrow-forward" onPress={() => goToStep(1)} disabled={saving !== null} />
-          )}
-
-          <View className="mt-2">
-            <SolidButton label="Save Draft" onPress={() => save('draft')} loading={saving === 'draft'} disabled={saving !== null} />
-          </View>
-          {!!state.automationId && (
-            <View className="mt-2">
-              <SolidButton label="Delete Automation" variant="danger" onPress={remove} loading={deleting} />
-            </View>
-          )}
-        </View>
       </ScrollView>
     </SafeAreaView>
   );

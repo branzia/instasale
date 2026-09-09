@@ -2,14 +2,19 @@ import { Ionicons } from '@expo/vector-icons';
 import { router, useLocalSearchParams } from 'expo-router';
 import { useEffect, useState } from 'react';
 import { ActivityIndicator, Alert, Pressable, ScrollView, Text, TextInput, View } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import GradientButton from '@/components/GradientButton';
+import ScreenHeader from '@/components/ScreenHeader';
 import SolidButton from '@/components/SolidButton';
-import { ui } from '@/config';
+import { tabBarHeight, ui } from '@/config';
 import * as api from '@/services/api';
 import { confirmDelete } from '@/utils/confirm';
+import { backOrToAutomations } from '@/utils/navigation';
 
 type TriggerMode = 'keywords' | 'any';
+
+// Mirrors $quickAddKeywords in dm-automation-builder.blade.php.
+const QUICK_ADD_KEYWORDS = ['price', 'rate', 'cost', 'available', 'stock', 'link', 'details', 'interested', 'buy', 'order'];
 
 /**
  * "Create Auto-Reply" / "Edit Automation" — mirrors
@@ -21,6 +26,7 @@ type TriggerMode = 'keywords' | 'any';
 export default function DmBuilder() {
   const { id } = useLocalSearchParams<{ id?: string }>();
   const isEdit = !!id;
+  const insets = useSafeAreaInsets();
 
   const [loading, setLoading] = useState(isEdit);
   const [saving, setSaving] = useState<'draft' | 'live' | null>(null);
@@ -49,8 +55,9 @@ export default function DmBuilder() {
     })();
   }, [id]);
 
-  const addKeyword = () => {
-    const pieces = newKeyword
+  const addKeyword = (word?: string) => {
+    const raw = word ?? newKeyword;
+    const pieces = raw
       .split(/[,\n]/)
       .map((p) => p.trim())
       .filter(Boolean);
@@ -64,7 +71,7 @@ export default function DmBuilder() {
       }
     }
     setKeywords(next);
-    setNewKeyword('');
+    if (word === undefined) setNewKeyword('');
   };
 
   const removeKeyword = (i: number) => setKeywords((prev) => prev.filter((_, idx) => idx !== i));
@@ -113,15 +120,19 @@ export default function DmBuilder() {
 
   if (loading) {
     return (
-      <SafeAreaView className="flex-1 bg-white items-center justify-center">
-        <ActivityIndicator color={ui.accent} />
+      <SafeAreaView className="flex-1 bg-white" edges={['top']}>
+        <ScreenHeader title="DM Auto Reply" onBack={backOrToAutomations} />
+        <View className="flex-1 items-center justify-center">
+          <ActivityIndicator color={ui.accent} />
+        </View>
       </SafeAreaView>
     );
   }
 
   return (
-    <SafeAreaView className="flex-1 bg-white" edges={['bottom']}>
-      <ScrollView className="px-6 pt-4" contentContainerStyle={{ paddingBottom: 40 }}>
+    <SafeAreaView className="flex-1 bg-white" edges={['top']}>
+      <ScreenHeader title="DM Auto Reply" onBack={backOrToAutomations} />
+      <ScrollView className="flex-1 px-6 pt-4" contentContainerStyle={{ paddingBottom: 24 }}>
         <Text className="text-gray-700 mb-2 font-medium">Name</Text>
         <TextInput
           value={name}
@@ -159,18 +170,31 @@ export default function DmBuilder() {
                 </View>
               ))}
             </View>
-            <View className="flex-row gap-2 mb-5">
+            <View className="flex-row gap-2 mb-3">
               <TextInput
                 value={newKeyword}
                 onChangeText={setNewKeyword}
-                onSubmitEditing={addKeyword}
+                onSubmitEditing={() => addKeyword()}
                 placeholder="Add a keyword, then Enter"
                 placeholderTextColor={ui.placeholderText}
                 className="bg-gray-50 border border-gray-200 rounded-xl px-3.5 py-3 text-gray-900 flex-1"
               />
-              <Pressable onPress={addKeyword} className="bg-brand-500 rounded-xl px-4 items-center justify-center">
+              <Pressable onPress={() => addKeyword()} className="bg-brand-500 rounded-xl px-4 items-center justify-center">
                 <Ionicons name="add" size={18} color="#fff" />
               </Pressable>
+            </View>
+            <Text className="text-gray-400 text-[11px] mb-3">Use commas or press Enter to add keywords.</Text>
+
+            <View className="flex-row flex-wrap gap-1.5 mb-5">
+              {QUICK_ADD_KEYWORDS.map((qk) => (
+                <Pressable
+                  key={qk}
+                  onPress={() => addKeyword(qk)}
+                  className="border border-gray-200 rounded-full px-2.5 py-1"
+                >
+                  <Text className="text-gray-500 text-[11px] font-semibold">+ {qk}</Text>
+                </Pressable>
+              ))}
             </View>
           </>
         )}
@@ -185,6 +209,16 @@ export default function DmBuilder() {
           className="bg-gray-50 border border-gray-200 rounded-2xl px-4 py-3.5 text-gray-900 mb-6 min-h-[100px]"
         />
 
+      </ScrollView>
+
+      {/* Fixed footer, outside the scroll area, so Go Live/Save Draft sit
+          right above the tab bar instead of trailing the content wherever
+          it happens to end. This screen sits inside the Automations tab's
+          own stack, so the app's fixed bottom tab bar is still drawn under
+          it — pad the footer by that same height (@/config's tabBarHeight,
+          kept in sync with (tabs)/_layout.tsx) so the buttons always clear
+          it instead of being cut off behind it. */}
+      <View className="px-6 pt-3 border-t border-gray-100" style={{ paddingBottom: 12 + tabBarHeight(insets.bottom) }}>
         <GradientButton label="Go Live" onPress={() => save('active')} loading={saving === 'live'} disabled={saving !== null} />
         <View className="mt-2">
           <SolidButton label="Save Draft" onPress={() => save('draft')} loading={saving === 'draft'} disabled={saving !== null} />
@@ -194,7 +228,7 @@ export default function DmBuilder() {
             <SolidButton label="Delete Automation" variant="danger" onPress={remove} loading={deleting} />
           </View>
         )}
-      </ScrollView>
+      </View>
     </SafeAreaView>
   );
 }

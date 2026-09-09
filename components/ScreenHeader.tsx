@@ -1,11 +1,12 @@
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Pressable, Text, View } from 'react-native';
-import { gradientShort } from '@/config';
+import { gradientShort, ui } from '@/config';
 
 interface Props {
   title: string;
   subtitle?: string;
+  onBack?: () => void;
   action?: {
     icon: keyof typeof Ionicons.glyphMap;
     onPress: () => void;
@@ -19,13 +20,26 @@ interface Props {
  * The action button, when present, is filled with the short Instagram
  * gradient rather than a flat brand color, echoing the same "primary action
  * gets the gradient" treatment used elsewhere (Home's status card, GradientButton).
+ *
+ * `onBack`, when passed, renders a leading chevron and is for a screen
+ * pushed on top of a tab (e.g. the automation builders) that still wants
+ * this same borderless/shadowless big-title look instead of the native
+ * Stack header's small height + bottom shadow — pass `headerShown: false`
+ * on that Stack.Screen and render this in the screen body instead.
  */
-export default function ScreenHeader({ title, subtitle, action }: Props) {
+export default function ScreenHeader({ title, subtitle, onBack, action }: Props) {
   return (
     <View className="flex-row items-center justify-between px-6 pt-6 pb-4">
-      <View className="flex-1 mr-3">
-        <Text className="text-2xl font-bold text-gray-900">{title}</Text>
-        {subtitle && <Text className="text-gray-500 text-sm mt-0.5">{subtitle}</Text>}
+      <View className="flex-row items-center flex-1 mr-3">
+        {onBack && (
+          <Pressable onPress={onBack} hitSlop={12} className="-ml-1 mr-2">
+            <Ionicons name="chevron-back" size={26} color={ui.accent} />
+          </Pressable>
+        )}
+        <View className="flex-1">
+          <Text className="text-2xl font-bold text-gray-900">{title}</Text>
+          {subtitle && <Text className="text-gray-500 text-sm mt-0.5">{subtitle}</Text>}
+        </View>
       </View>
       {action && (
         <Pressable onPress={action.onPress}>

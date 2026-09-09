@@ -77,9 +77,12 @@ export default function Catalog() {
       />
 
       <Segment
+        variant="tabs"
         options={[
-          { value: 'products', label: 'Products' },
-          { value: 'attributes', label: 'Attributes' },
+          // Icons match this screen's own EmptyState icons below, same
+          // reasoning as the Leads & Orders tab bar (app/(tabs)/leads/index.tsx).
+          { value: 'products', label: 'Products', icon: { on: 'basket', off: 'basket-outline' } },
+          { value: 'attributes', label: 'Attributes', icon: { on: 'pricetag', off: 'pricetag-outline' } },
         ]}
         value={segment}
         onChange={setSegment}

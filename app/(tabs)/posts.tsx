@@ -135,16 +135,16 @@ export default function Posts() {
             <View>
               <Pressable
                 onPress={() => router.push('/automations/comment-builder?mediaId=all')}
-                className="flex-row items-center bg-brand-50 rounded-2xl px-4 py-3.5 mb-3"
+                className="flex-row items-center bg-brand-50 rounded-2xl gap-2 px-4 py-3.5 mb-3"
               >
                 <View className="w-9 h-9 rounded-full bg-brand-500 items-center justify-center mr-3">
                   <Ionicons name="apps" size={16} color="#fff" />
                 </View>
-                <View className="flex-1">
+                <View className="flex-initial ">
                   <Text className="font-semibold text-gray-900">Any post or reel</Text>
                   <Text className="text-gray-500 text-xs mt-0.5">One automation that covers every post — even future ones</Text>
                 </View>
-                <Text className="text-brand-600 font-semibold text-sm">Set up</Text>
+                <Text className=" text-brand-600 font-semibold text-sm">Set up</Text>
               </Pressable>
 
               <View className="flex-row flex-wrap gap-2 mb-3">

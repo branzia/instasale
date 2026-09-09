@@ -1,11 +1,13 @@
 import { Stack } from 'expo-router';
-import { ui } from '@/config';
 
+// headerShown: false on both — [id] (Lead detail) renders its own
+// <ScreenHeader onBack={...} /> in-body instead of the native Stack header,
+// same reasoning as home/_layout.tsx's product-form/attribute-form.
 export default function LeadsLayout() {
   return (
-    <Stack screenOptions={{ headerTintColor: ui.accent, headerTitleStyle: { fontSize: 17 } }}>
+    <Stack>
       <Stack.Screen name="index" options={{ headerShown: false }} />
-      <Stack.Screen name="[id]" options={{ title: 'Lead' }} />
+      <Stack.Screen name="[id]" options={{ headerShown: false }} />
     </Stack>
   );
 }

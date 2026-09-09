@@ -5,6 +5,7 @@ import { ActivityIndicator, Alert, Pressable, ScrollView, Text, TextInput, View 
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Checkbox from '@/components/Checkbox';
 import GradientButton from '@/components/GradientButton';
+import ScreenHeader from '@/components/ScreenHeader';
 import SolidButton from '@/components/SolidButton';
 import { ui } from '@/config';
 import * as api from '@/services/api';
@@ -88,16 +89,22 @@ export default function AttributeForm() {
       }
     });
 
+  const title = isEdit ? 'Edit Attribute' : 'Add Attribute';
+
   if (loading) {
     return (
-      <SafeAreaView className="flex-1 bg-white items-center justify-center">
-        <ActivityIndicator color={ui.accent} />
+      <SafeAreaView className="flex-1 bg-white" edges={['top', 'bottom']}>
+        <ScreenHeader title={title} onBack={() => router.back()} />
+        <View className="flex-1 items-center justify-center">
+          <ActivityIndicator color={ui.accent} />
+        </View>
       </SafeAreaView>
     );
   }
 
   return (
-    <SafeAreaView className="flex-1 bg-white" edges={['bottom']}>
+    <SafeAreaView className="flex-1 bg-white" edges={['top', 'bottom']}>
+      <ScreenHeader title={title} onBack={() => router.back()} />
       <ScrollView className="px-6 pt-4" contentContainerStyle={{ paddingBottom: 40 }}>
         <Text className="text-gray-700 mb-2 font-medium">Name</Text>
         <TextInput
