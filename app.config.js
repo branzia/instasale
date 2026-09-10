@@ -37,6 +37,7 @@ module.exports = {
     plugins: [
       'expo-secure-store',
       'expo-router',
+      'expo-font',
       [
         'expo-camera',
         {
@@ -46,6 +47,9 @@ module.exports = {
     ],
     extra: {
       router: {},
+      eas: {
+        projectId: '2af296f1-5cdd-4e13-9aec-6515ed22bccc',
+      },
     },
     owner: 'itsvishwa01',
   },
