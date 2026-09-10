@@ -93,7 +93,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   const signOut = async () => {
-    await api.removePushToken().catch(() => {}); // best-effort — needs the still-valid token
+    // Removes only this device's push registration (or, if it never
+    // registered this session, falls back to clearing all of them) — see
+    // services/notifications.ts. Must run before api.logout() revokes the
+    // bearer token this call needs to authenticate as the merchant.
     await unregisterPushNotifications();
     await api.logout().catch(() => {});
     await api.clearToken();

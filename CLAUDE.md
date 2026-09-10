@@ -98,7 +98,7 @@ All Bearer/Sanctum-authenticated via `App\Http\Middleware\AuthenticateAccountApi
 |---|---|---|
 | `POST /api/account/auth/pair/confirm` (public, throttled) | Exchanges a QR-scan pairing code for `{ token, account }` — the app's only sign-in path | `Api\Account\PairingController::confirm` |
 | `POST /api/account/auth/logout` / `GET /api/account/auth/me` | | `Api\Account\AuthController` |
-| `POST`/`DELETE /api/account/push-token` | Expo push token, stored on `merchants.expo_push_token` | `Api\Account\PushTokenController` |
+| `POST`/`DELETE /api/account/push-token` | Expo push token, stored one-row-per-device in `merchant_push_tokens` (2026-09-10 — replaced the earlier single `merchants.expo_push_token` column so a merchant paired on several phones gets push on all of them) | `Api\Account\PushTokenController` |
 | `GET`/`DELETE /api/instagram/connection` | Connection status / disconnect (connecting itself is web-only) | `Api\Instagram\ConnectionController` |
 | `GET /api/instagram/media` (`?after=`) | Posts & Reels — live Graph API media + per-item automation coverage, mirrors `App\Filament\Instagram\Pages\PostsReels` | `Api\Instagram\MediaController::index` |
 | `GET /api/instagram/automations` | List + summary counts, mirrors `AllAutomations` | `Api\Instagram\AutomationController::index` |
@@ -118,11 +118,13 @@ All Bearer/Sanctum-authenticated via `App\Http\Middleware\AuthenticateAccountApi
 `services/api.ts` mirrors the live table exactly — extend both together if this ever drifts.
 
 ### Push notification delivery
-`App\Services\ExpoPushService::send()` (mirrors `FcmService`'s logs-and-returns-false-never-throws convention, but posts to Expo's push API, not FCM — see `merchants.expo_push_token`) is wired into 2 real trigger points, each via `defer()` so it never blocks the request that triggered it:
+`App\Services\ExpoPushService::sendToMerchant()` (mirrors `FcmService`'s logs-and-returns-false-never-throws convention, but posts to Expo's push API, not FCM — see `merchant_push_tokens` above) fans a single event out to every device that merchant has registered (batched, up to 100 tokens per Expo request; a `DeviceNotRegistered` reply auto-prunes that row). Wired into 2 real trigger points, each via `defer()` so it never blocks the request that triggered it:
 - New chatbot-created Lead (`ProductSalesConversationService::handleConfirmation()`, the YES branch) — no gate needed, `Lead::create()` is never a duplicate.
 - New paid/confirmed sale (`Instagram\LeadPaymentController::verify()`/`confirmManual()`, right after each `SalesOrder::create()`).
 
 The former "new inbound DM"/"new inbound comment" triggers were removed 2026-09-09 along with the Inbox/Comments tabs — there's no screen left to tap into. Manually-created Leads (`LeadResource` on the web dashboard) still don't trigger a push — only the two automated-creation/confirmation paths above do.
+
+**Multi-device (2026-09-10).** QR-scan login has no single-device limit — a merchant can pair SaleDM on several phones, each getting its own Sanctum token. Each device's own Expo push token is cached in `services/notifications.ts` at registration time; `AuthContext.signOut()` → `unregisterPushNotifications()` sends that specific token to `DELETE /api/account/push-token`, so signing out one device only removes that device's registration — the other paired phones keep receiving push. If a device never completed registration this session (e.g. sign-out happens before `registerForPushNotifications()` ran), removal falls back to no-arg (server clears every device for that merchant) rather than leaving an orphaned row.
 
 **Tap-to-navigate.** `services/notifications.ts#resolveNotificationRoute` maps each trigger's `data.url` to an in-app route: `/instagram/leads`(`/{id}`) → Leads tab (or lead detail), `/instagram/orders` → the Leads tab's Orders segment via `?tab=orders` (`app/(tabs)/leads/index.tsx` reads it through `useLocalSearchParams` to pick the initial segment — Orders has no route of its own, it's a segment of the same screen). `subscribeToNotificationTaps()` (same file) wires this to both a live tap (`addNotificationResponseReceivedListener`) and a cold-start tap (`getLastNotificationResponseAsync()`, consumed via `clearLastNotificationResponseAsync()` so it never replays on remount) — called once from `app/_layout.tsx`'s `RootLayoutNav`, gated on the same "fully onboarded" condition as the redirect gate itself, so a tap never lands mid-onboarding-flow only to get bounced back out.
 

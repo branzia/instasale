@@ -254,10 +254,19 @@ export const getSalesOrders = (after?: number) =>
 // ─── Push token ─────────────────────────────────────────────────────────────
 // Uses Expo push tokens (works inside Expo Go), not a raw FCM device
 // token — see services/notifications.ts. Backend: Api\Account\
-// PushTokenController, stored on the new merchants.expo_push_token column
-// (deliberately separate from Branzia Store's merchants.fcm_token).
+// PushTokenController, stored one-row-per-device in
+// merchant_push_tokens (deliberately separate from Branzia Store's
+// merchants.fcm_token) — a merchant can have several SaleDM devices
+// paired at once (QR-scan login has no single-device limit), so this
+// device's own token is what identifies it for registration/removal.
 
-export const registerPushToken = (token: string) =>
-  accountRequest('POST', '/push-token', { token, provider: 'expo' } as any);
+export const registerPushToken = (token: string, platform?: string) =>
+  accountRequest('POST', '/push-token', { token, provider: 'expo', platform } as any);
 
-export const removePushToken = () => accountRequest('DELETE', '/push-token');
+// `token` identifies which device to remove — pass this device's own
+// current token so signing out only removes this device's registration,
+// not every device the merchant has paired. Omitting it falls back to the
+// backend's old behavior (wipes every device) — kept as a safety net, not
+// the intended path.
+export const removePushToken = (token?: string) =>
+  accountRequest('DELETE', '/push-token', token ? ({ token } as any) : undefined);

@@ -48,10 +48,20 @@ async function requestPermission(): Promise<boolean> {
   return status === 'granted';
 }
 
+// Cached so signOut() can remove exactly this device's registration
+// instead of wiping every device the merchant has paired (see
+// api.removePushToken). An Expo push token is stable for a given
+// device+project+installation, so re-deriving it at sign-out time (see
+// getCurrentExpoPushToken below) would also work, but caching the value we
+// already fetched avoids an extra native call and an unnecessary
+// permission check on the sign-out path.
+let cachedExpoPushToken: string | null = null;
+
 /**
  * Requests permission, fetches the current Expo push token, and registers
  * it with the Branzia Account API. Safe to call multiple times (e.g. on
- * every app launch).
+ * every app launch) — the backend upserts by token, so re-registering the
+ * same device is a no-op there.
  */
 export async function registerForPushNotifications(): Promise<void> {
   if (!Notifications) return;
@@ -71,17 +81,24 @@ export async function registerForPushNotifications(): Promise<void> {
       projectId ? { projectId } : undefined,
     );
     if (expoPushToken) {
-      await api.registerPushToken(expoPushToken);
+      cachedExpoPushToken = expoPushToken;
+      await api.registerPushToken(expoPushToken, Platform.OS);
     }
   } catch (err) {
     console.warn('[push] registration failed', err);
   }
 }
 
+/**
+ * Removes this device's push registration from the server. Uses the token
+ * cached by registerForPushNotifications() in this app session; if that
+ * never ran (e.g. sign-out happens before registration ever completed),
+ * falls back to no-arg removal, which clears every device the merchant has
+ * paired rather than leaving this one orphaned server-side.
+ */
 export async function unregisterPushNotifications(): Promise<void> {
-  // Nothing to tear down locally for expo-notifications listeners here —
-  // token removal from the server happens via api.removePushToken()
-  // (called from AuthContext.signOut()).
+  await api.removePushToken(cachedExpoPushToken ?? undefined).catch(() => {});
+  cachedExpoPushToken = null;
 }
 
 /**
