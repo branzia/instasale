@@ -110,9 +110,8 @@ export default function Scan() {
     const wasDenied = permission.status === 'denied' && !permission.canAskAgain;
 
     return (
-      <SafeAreaView className="flex-1 bg-white" edges={['top', 'bottom']}>
-        <ScrollView contentContainerStyle={{ flexGrow: 1 }} showsVerticalScrollIndicator={false}>
-          <View className="items-center pt-8 pb-6 px-8">
+      <SafeAreaView className="flex-1 bg-white" edges={['top']}>
+          <View className="items-center pt-10 pb-6 px-8">
             <LinearGradient
               colors={gradientShort as unknown as [string, string]}
               start={{ x: 0, y: 0 }}
@@ -127,6 +126,7 @@ export default function Scan() {
             </Text>
           </View>
 
+        <ScrollView contentContainerStyle={{ flexGrow: 1 }} showsVerticalScrollIndicator={false}>
           <View className="px-6 mb-2">
             <Text className="text-gray-900 font-semibold text-base mb-3">How to sign in</Text>
             <StepRow number={1} text="Open branzia.app/instagram on your computer or phone browser." />

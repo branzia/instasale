@@ -69,7 +69,7 @@ export default function InstagramRequired() {
   };
 
   return (
-    <SafeAreaView className="flex-1 bg-white" edges={['top', 'bottom']}>
+    <SafeAreaView className="flex-1 bg-white" edges={['top']}>
       {/* Identity block stays pinned above the scroll — it's "what screen is
           this", not scrollable content, so it shouldn't disappear upward
           while reading the steps/info below it. */}

@@ -142,7 +142,7 @@ export default function ProductForm() {
 
   if (loading) {
     return (
-      <SafeAreaView className="flex-1 bg-white" edges={['top', 'bottom']}>
+      <SafeAreaView className="flex-1 bg-white" edges={['top']}>
         <ScreenHeader title={title} onBack={() => router.back()} />
         <View className="flex-1 items-center justify-center">
           <ActivityIndicator color={ui.accent} />
@@ -152,7 +152,7 @@ export default function ProductForm() {
   }
 
   return (
-    <SafeAreaView className="flex-1 bg-white" edges={['top', 'bottom']}>
+    <SafeAreaView className="flex-1 bg-white" edges={['top']}>
       <ScreenHeader title={title} onBack={() => router.back()} />
       <ScrollView className="px-6 pt-4" contentContainerStyle={{ paddingBottom: 40 }}>
         <Text className="text-gray-700 mb-2 font-medium">Name</Text>

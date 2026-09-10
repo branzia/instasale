@@ -47,7 +47,7 @@ export default function LeadDetail() {
 
   if (loading) {
     return (
-      <SafeAreaView className="flex-1 bg-white" edges={['top', 'bottom']}>
+      <SafeAreaView className="flex-1 bg-white" edges={['top']}>
         <ScreenHeader title="Lead" onBack={() => router.back()} />
         <View className="flex-1 items-center justify-center">
           <ActivityIndicator color={ui.accent} />
@@ -58,7 +58,7 @@ export default function LeadDetail() {
 
   if (!lead) {
     return (
-      <SafeAreaView className="flex-1 bg-white" edges={['top', 'bottom']}>
+      <SafeAreaView className="flex-1 bg-white" edges={['top']}>
         <ScreenHeader title="Lead" onBack={() => router.back()} />
         <View className="flex-1 items-center justify-center">
           <Text className="text-gray-500">Lead not found.</Text>
@@ -70,7 +70,7 @@ export default function LeadDetail() {
   const order = lead.sales_order;
 
   return (
-    <SafeAreaView className="flex-1 bg-white" edges={['top', 'bottom']}>
+    <SafeAreaView className="flex-1 bg-white" edges={['top']}>
       <ScreenHeader title="Lead" onBack={() => router.back()} />
       <ScrollView className="px-5 pt-4">
         <View className="flex-row justify-between items-start mb-1">

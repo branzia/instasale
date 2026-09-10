@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024">
+  <!--
+    SaleDM logo mark — editable source (2026-09-10).
+
+    This is the master shape everything else (icon.png, favicon.png,
+    splash-icon.png, android-icon-foreground/monochrome.png, logo-mark.png,
+    plus store-assets/*.png) gets rasterized from, so an edit here is one
+    place to change instead of eight PNGs independently. After editing,
+    run `npm run generate:app-icons` (writes into this assets/ folder) and
+    `npm run generate:store-assets` (writes into store-assets/) — see
+    scripts/logo-glyph.js for the parser both read this file through.
+
+    Bubble: drawn as a single centerline <rect> with rx/ry + stroke-width,
+    NOT as separate outer/inner rects — SVG strokes are centered on the
+    path automatically, so this can't drift into the outer/inner-radius
+    mismatch that raster math needed two rects to get right.
+
+    Tail: its two top points (442,608) and (396,608) are deliberately
+    INSIDE the bubble rect's own footprint (bubble's solid outer edge
+    reaches y=612), not merely near it — earlier points placed by eye
+    further out (410/345 at y=608) landed past where the rx=70 corner
+    curve had already curved away, leaving a visible gap between the
+    corner and the tail. Keep any future tail edit inside that footprint.
+    Its tip is a quadratic curve (Q), not a third sharp L vertex — a plain
+    3-point triangle read as too sharp/needle-like at the bottom (2026-09-10
+    feedback; an initial 14-unit rounding was too subtle to actually read
+    as rounded at icon scale, so this uses 30). The Q's control point is
+    the original sharp tip (330,682); the two curve endpoints sit that
+    distance back along each edge from it — bigger = blunter tip.
+
+    Bolt: Feather "zap", scaled/centered inside the bubble's interior
+    (369-655 x 378-580) with clear margin on every side so it can't touch
+    the stroke — that touching was the original defect this replaced.
+  -->
+  <rect x="353" y="362" width="318" height="234" rx="54" ry="54" fill="none" stroke="#fff" stroke-width="32" />
+  <path d="M442,608 L396,608 L350,659.6 Q330,682 355,665.5 Z" fill="#fff" />
+  <polygon points="520,404 445,494 497,494 490,554 580,464 527,464" fill="#fff" />
+</svg>

@@ -85,7 +85,7 @@ export default function ProductAttributeCard({ attr, onChange, onRemove }: Props
 
       <Text className="text-xs font-medium text-gray-600 mb-2">Options & prices</Text>
       {attr.values.map((val, i) => {
-        const isDefault = val.price === '0' || val.price === '';
+        const isDefault = val.price === '0';
         return (
           <View key={i} className="flex-row items-center gap-2 mb-2">
             <TextInput
@@ -95,7 +95,7 @@ export default function ProductAttributeCard({ attr, onChange, onRemove }: Props
               placeholderTextColor={ui.placeholderText}
               className="bg-white border border-gray-200 rounded-xl px-3 py-2.5 text-gray-900 flex-1"
             />
-            <Pressable onPress={() => updateValue(i, { price: isDefault ? '' : '0' })} hitSlop={6}>
+            <Pressable onPress={() => updateValue(i, { price: isDefault ? '' : '0' })} hitSlop={4} className="mr-1">
               <View className={`w-5 h-5 rounded items-center justify-center ${isDefault ? 'bg-brand-500' : 'bg-white border border-gray-300'}`}>
                 {isDefault && <Ionicons name="checkmark" size={12} color="#fff" />}
               </View>
@@ -107,10 +107,10 @@ export default function ProductAttributeCard({ attr, onChange, onRemove }: Props
                 placeholder="0"
                 placeholderTextColor={ui.placeholderText}
                 keyboardType="decimal-pad"
-                className="bg-white border border-gray-200 rounded-xl px-3 py-2.5 text-gray-900 w-20"
+                className="bg-white border border-gray-200 rounded-xl px-3 py-2.5 text-gray-900 w-20 mr-1"
               />
             )}
-            <Pressable onPress={() => removeValue(i)} hitSlop={6}>
+            <Pressable onPress={() => removeValue(i)} hitSlop={4} className="ml-1">
               <Ionicons name="close-circle" size={18} color="#9CA3AF" />
             </Pressable>
           </View>
