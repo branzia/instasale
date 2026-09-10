@@ -54,7 +54,12 @@ export default function ProductForm() {
   const { id } = useLocalSearchParams<{ id?: string }>();
   const isEdit = !!id;
 
-  const [loading, setLoading] = useState(isEdit);
+  // Always wait for the predefined-attributes fetch to resolve, even when
+  // adding a new product — previously this started false for "Add Product"
+  // so the form (and its empty "no attributes" state) rendered before the
+  // attributes fetch had a chance to land, and a slow response looked
+  // indistinguishable from there being no existing attributes to add.
+  const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [deleting, setDeleting] = useState(false);
   const [name, setName] = useState('');
@@ -224,6 +229,9 @@ export default function ProductForm() {
           />
         ))}
 
+        {predefined.length > 0 && (
+          <Text className="text-gray-500 text-xs mb-2">Add an existing attribute:</Text>
+        )}
         <View className="flex-row flex-wrap gap-2 mb-8">
           {predefined.map((pre) => {
             const added = isPredefinedAdded(pre.id);
@@ -232,10 +240,10 @@ export default function ProductForm() {
                 key={pre.id}
                 onPress={() => addPredefinedAttr(pre)}
                 disabled={added}
-                className={`flex-row items-center rounded-full border px-3 py-1.5 ${added ? 'border-gray-200 bg-gray-100 opacity-50' : 'border-gray-300 bg-white'}`}
+                className={`flex-row items-center rounded-full border px-3 py-1.5 ${added ? 'border-gray-200 bg-gray-100 opacity-50' : 'border-brand-300 bg-brand-50'}`}
               >
-                <Text className="text-gray-700 text-sm mr-1">+</Text>
-                <Text className="text-gray-700 text-sm">{pre.name}</Text>
+                <Text className={`text-sm mr-1 ${added ? 'text-gray-500' : 'text-brand-600'}`}>+</Text>
+                <Text className={`text-sm font-medium ${added ? 'text-gray-500' : 'text-brand-600'}`}>{pre.name}</Text>
               </Pressable>
             );
           })}
