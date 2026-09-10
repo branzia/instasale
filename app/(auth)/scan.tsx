@@ -5,9 +5,10 @@ import { useEffect, useState } from 'react';
 import { BackHandler, Linking, Pressable, ScrollView, Text, View } from 'react-native';
 import { ActivityIndicator } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import Card from '@/components/Card';
 import GradientButton from '@/components/GradientButton';
+import InfoRow from '@/components/InfoRow';
 import SolidButton from '@/components/SolidButton';
+import StepRow from '@/components/StepRow';
 import { app, gradientShort, ui } from '@/config';
 import { useAuth } from '@/context/AuthContext';
 import * as api from '@/services/api';
@@ -29,41 +30,6 @@ function extractCode(raw: string): string | null {
   const match = raw.match(/[?&]code=([^&]+)/);
   if (match) return decodeURIComponent(match[1]);
   return raw.trim() || null;
-}
-
-/** Small icon-circle + text row, used by both content sections below. */
-function InfoRow({
-  icon,
-  title,
-  body,
-}: {
-  icon: keyof typeof Ionicons.glyphMap;
-  title: string;
-  body: string;
-}) {
-  return (
-    <Card className="flex-row items-start">
-      <View className="w-10 h-10 rounded-full bg-brand-50 items-center justify-center mr-3">
-        <Ionicons name={icon} size={18} color={ui.accent} />
-      </View>
-      <View className="flex-1">
-        <Text className="text-gray-900 font-semibold mb-0.5">{title}</Text>
-        <Text className="text-gray-500 text-sm leading-5">{body}</Text>
-      </View>
-    </Card>
-  );
-}
-
-/** Numbered step row for the "how to sign in" instructions. */
-function StepRow({ number, text }: { number: number; text: string }) {
-  return (
-    <View className="flex-row items-center mb-3">
-      <View className="w-7 h-7 rounded-full bg-gray-900 items-center justify-center mr-3">
-        <Text className="text-white text-xs font-bold">{number}</Text>
-      </View>
-      <Text className="flex-1 text-gray-700 text-sm leading-5">{text}</Text>
-    </View>
-  );
 }
 
 export default function Scan() {
@@ -222,22 +188,32 @@ export default function Scan() {
         onBarcodeScanned={scanning ? handleScan : undefined}
       />
 
-      <SafeAreaView className="absolute inset-x-0 top-0" edges={['top']}>
-        <Pressable
-          onPress={closeCamera}
-          hitSlop={12}
-          className="absolute left-4 top-4 w-10 h-10 items-center justify-center rounded-full bg-black/50"
-          style={{ zIndex: 1 }}
-        >
-          <Ionicons name="close" size={22} color="#fff" />
-        </Pressable>
-        <View className="items-center pt-6 px-8">
-          <Text className="text-white text-lg font-bold mb-1">Point at the code on branzia.app/instagram</Text>
-          <Text className="text-white/80 text-center text-sm">
-            Open “Connect Mobile App” on the web dashboard to see it.
-          </Text>
-        </View>
-      </SafeAreaView>
+      {/* One header block, not a button floating disconnected in the corner:
+          the close button sits in its own row, the instructions in their
+          own row below it, both grounded on a shared scrim so either reads
+          clearly over whatever the camera feed behind them looks like. */}
+      <LinearGradient
+        colors={['rgba(0,0,0,0.7)', 'rgba(0,0,0,0)']}
+        style={{ position: 'absolute', left: 0, right: 0, top: 0 }}
+      >
+        <SafeAreaView edges={['top']}>
+          <View className="flex-row items-center px-4 pt-2 pb-1">
+            <Pressable
+              onPress={closeCamera}
+              hitSlop={12}
+              className="w-10 h-10 items-center justify-center rounded-full bg-white/15"
+            >
+              <Ionicons name="close" size={22} color="#fff" />
+            </Pressable>
+          </View>
+          <View className="items-center px-8 pb-6">
+            <Text className="text-white text-lg font-bold mb-1 text-center">Point at the code on branzia.app/instagram</Text>
+            <Text className="text-white/80 text-center text-sm">
+              Open “Connect Mobile App” on the web dashboard to see it.
+            </Text>
+          </View>
+        </SafeAreaView>
+      </LinearGradient>
 
       {/* Scan-frame guide — purely visual, doesn't gate detection. */}
       <View pointerEvents="none" className="absolute inset-0 items-center justify-center">
