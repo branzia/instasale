@@ -76,7 +76,7 @@ module.exports = {
     extra: {
       router: {},
       eas: {
-        projectId: '2af296f1-5cdd-4e13-9aec-6515ed22bccc',
+        projectId: '141d5e72-e01f-4e29-8626-01a5de9e1d8e',
       },
     },
     owner: 'itsvishwa01',

@@ -89,7 +89,7 @@ export default function InstagramRequired() {
         </Text>
       </View>
 
-      <ScrollView contentContainerStyle={{ flexGrow: 1 }} showsVerticalScrollIndicator={false}>
+      <ScrollView className="flex-1" contentContainerStyle={{ flexGrow: 1 }} showsVerticalScrollIndicator={false}>
         <View className="px-6 mt-2">
           <Text className="text-gray-900 font-semibold text-base mb-3">How to connect</Text>
           <StepRow number={1} text="Open branzia.app/instagram on your computer or phone browser." />
@@ -142,14 +142,16 @@ export default function InstagramRequired() {
         </View>
       </ScrollView>
 
-      <View className="px-6 pt-4 pb-2" style={{ borderTopWidth: 1, borderTopColor: '#F3F4F6' }}>
-        <GradientButton
-          label="I've Connected — Check Again"
-          icon="refresh-outline"
-          onPress={checkAgain}
-          loading={checking}
-        />
-      </View>
+      <SafeAreaView edges={['bottom']} style={{ borderTopWidth: 1, borderTopColor: '#F3F4F6' }}>
+        <View className="px-6 pt-4 pb-2">
+          <GradientButton
+            label="I've Connected — Check Again"
+            icon="refresh-outline"
+            onPress={checkAgain}
+            loading={checking}
+          />
+        </View>
+      </SafeAreaView>
     </SafeAreaView>
   );
 }

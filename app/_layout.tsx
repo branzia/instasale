@@ -2,6 +2,7 @@ import '../global.css';
 import { Slot, useRouter, useSegments } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { useEffect } from 'react';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { AuthProvider, useAuth } from '@/context/AuthContext';
 import { subscribeToNotificationTaps } from '@/services/notifications';
 
@@ -99,8 +100,10 @@ function RootLayoutNav() {
 
 export default function RootLayout() {
   return (
-    <AuthProvider>
-      <RootLayoutNav />
-    </AuthProvider>
+    <SafeAreaProvider>
+      <AuthProvider>
+        <RootLayoutNav />
+      </AuthProvider>
+    </SafeAreaProvider>
   );
 }

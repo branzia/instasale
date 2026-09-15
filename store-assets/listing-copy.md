@@ -7,6 +7,15 @@ Play Console — these are a starting point, not final copy.
 ## App name (30 char max)
 InstaSale
 
+**Play Console listing title — use "InstaDM" instead.** Play's metadata
+policy flags app names containing keywords that indicate price or
+promotion, and "InstaSale" trips it on "Sale." This is a store-listing-
+field workaround only — the in-app name, package id
+(`com.branzia.InstaSale`), and all branding/docs stay "InstaSale."
+"InstaDM" fits the same short, sales-focused, no-company-prefix naming
+convention as the competitor apps ("Quick DM"/"Send DM") already cited
+for the "InstaSale" choice itself. (7 chars — well under the 30 limit.)
+
 ## Short description (80 char max)
 Turn Instagram DMs into sales — comment & DM automation, leads, payments
 
