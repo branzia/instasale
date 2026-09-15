@@ -1,4 +1,4 @@
-# SaleDM
+# InstaSale
 
 The official mobile app for **Branzia Instagram Automation** — turn Instagram comments and DMs into sales, from your phone.
 
