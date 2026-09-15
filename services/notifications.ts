@@ -3,7 +3,7 @@
  *
  * Uses expo-notifications' Expo push token (not a raw FCM device token
  * like Branzia Merchant) — that's what actually works inside plain Expo
- * Go, since @react-native-firebase needs a custom dev client. If SaleDM
+ * Go, since @react-native-firebase needs a custom dev client. If InstaSale
  * later moves to a dev-client/prebuild setup, this can switch to raw FCM
  * the same way Merchant's services/notifications.ts does; until then the
  * server must send via Expo's push API, not FCM v1 directly.

@@ -24,8 +24,9 @@ const DASHBOARD_URL = 'https://branzia.app/instagram';
  *
  * Redesigned 2026-09-10 (explicit user call — "redesign properly, focus on
  * content"): the old version was just an icon + one paragraph + a single
- * button. This replaces the camera emoji with SaleDM's actual logo mark
- * (same treatment as Splash — see components/Splash.tsx), breaks the
+ * button. This replaces the camera emoji with InstaSale's actual logo mark
+ * (assets/logo-mark.png — also what app.config.js's native splash config
+ * uses), breaks the
  * paragraph into the numbered-step layout already established on
  * (auth)/scan.tsx (via the shared StepRow component), and adds an actual
  * "Open Web Dashboard" action — opening the browser is the one thing a
@@ -93,7 +94,14 @@ export default function InstagramRequired() {
           <Text className="text-gray-900 font-semibold text-base mb-3">How to connect</Text>
           <StepRow number={1} text="Open branzia.app/instagram on your computer or phone browser." />
           <StepRow number={2} text="Sign in and connect your Instagram Business account there." />
-          <StepRow number={3} text="Come back to SaleDM and tap “Check Again” below." />
+          <StepRow number={3} text="Come back to InstaSale and tap “Check Again” below." />
+          <View style={{ marginTop: 4 }}>
+            <SolidButton
+              label="Open Web Dashboard"
+              icon="open-outline"
+              onPress={() => Linking.openURL(DASHBOARD_URL)}
+            />
+          </View>
         </View>
 
         <View className="px-6 mt-6">
@@ -101,7 +109,7 @@ export default function InstagramRequired() {
           <InfoRow
             icon="chatbubbles-outline"
             title="Automate comments & DMs"
-            body="Once connected, SaleDM can auto-reply to comments and DMs on your posts and reels for you."
+            body="Once connected, InstaSale can auto-reply to comments and DMs on your posts and reels for you."
           />
           <InfoRow
             icon="person-add-outline"
@@ -136,12 +144,6 @@ export default function InstagramRequired() {
 
       <View className="px-6 pt-4 pb-2" style={{ borderTopWidth: 1, borderTopColor: '#F3F4F6' }}>
         <GradientButton
-          label="Open Web Dashboard"
-          icon="open-outline"
-          onPress={() => Linking.openURL(DASHBOARD_URL)}
-        />
-        <View style={{ height: 10 }} />
-        <SolidButton
           label="I've Connected — Check Again"
           icon="refresh-outline"
           onPress={checkAgain}

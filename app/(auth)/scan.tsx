@@ -14,14 +14,14 @@ import { useAuth } from '@/context/AuthContext';
 import * as api from '@/services/api';
 
 /**
- * SaleDM's only sign-in screen — Login/Register forms were removed
+ * InstaSale's only sign-in screen — Login/Register forms were removed
  * entirely (2026-09, explicit user call). The merchant is already signed
  * into the Branzia web dashboard (`/instagram` → "Connect Mobile App"),
  * which shows a short-lived QR code; scanning it here exchanges the code
  * for a bearer token via `Api\Account\PairingController::confirm()` — no
  * typed credentials, ever, in this app.
  *
- * Accepts either a bare code or a `saledm://pair?code=...` deep-link
+ * Accepts either a bare code or a `InstaSale://pair?code=...` deep-link
  * string as the QR payload, so a code scanned by the phone's ordinary
  * camera app (which would try to open it as a link) and one scanned here
  * both resolve the same way.
@@ -135,7 +135,7 @@ export default function Scan() {
           </View>
 
           <View className="px-6 mt-4">
-            <Text className="text-gray-900 font-semibold text-base mb-3">What SaleDM does for you</Text>
+            <Text className="text-gray-900 font-semibold text-base mb-3">What InstaSale does for you</Text>
             <InfoRow
               icon="chatbubbles-outline"
               title="Comment & DM Automation"

@@ -18,8 +18,8 @@ Answer **No** to all of: violence, sexual content, profanity, gambling
 shared publicly. The only borderline question is usually phrased like
 "Does the app allow users to interact or exchange content?" — answer
 **No**: comments/DMs shown in-app are the merchant's own Instagram data
-pulled from Meta's Graph API, not content created *inside* SaleDM and
-shared with other SaleDM users.
+pulled from Meta's Graph API, not content created *inside* InstaSale and
+shared with other InstaSale users.
 
 Expected result: **PEGI 3 / Everyone**, since it's a single-tenant
 business tool.
@@ -33,7 +33,7 @@ business tool.
 
 ## Ads
 
-**No ads** — SaleDM has no ad SDK integrated.
+**No ads** — InstaSale has no ad SDK integrated.
 
 ## Data safety form
 
@@ -75,7 +75,7 @@ Play Console's "App access" section lets you either:
 
 Draft instructions for the field:
 
-> SaleDM has no username/password login. Sign-in works by scanning a
+> InstaSale has no username/password login. Sign-in works by scanning a
 > short-lived QR code shown on an already-authenticated web session at
 > branzia.app/instagram → "Connect Mobile App". Since this code is
 > single-use and regenerates every 2 minutes, we've attached a screen

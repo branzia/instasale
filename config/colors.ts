@@ -7,7 +7,7 @@
  * the brand colour.
  */
 
-/** SaleDM brand magenta — mirrors the "brand" palette in tailwind.config.js. */
+/** InstaSale brand magenta — mirrors the "brand" palette in tailwind.config.js. */
 export const brand = {
   primary: '#C13584',
   50: '#FDF1F7',

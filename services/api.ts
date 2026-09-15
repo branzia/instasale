@@ -256,7 +256,7 @@ export const getSalesOrders = (after?: number) =>
 // token — see services/notifications.ts. Backend: Api\Account\
 // PushTokenController, stored one-row-per-device in
 // merchant_push_tokens (deliberately separate from Branzia Store's
-// merchants.fcm_token) — a merchant can have several SaleDM devices
+// merchants.fcm_token) — a merchant can have several InstaSale devices
 // paired at once (QR-scan login has no single-device limit), so this
 // device's own token is what identifies it for registration/removal.
 

@@ -1,5 +1,5 @@
 /**
- * SaleDM brand palette — the Instagram gradient (purple → pink → orange),
+ * InstaSale brand palette — the Instagram gradient (purple → pink → orange),
  * shared between tailwind.config.js and config/colors.ts.
  *
  * `primary` / `palette` give Tailwind's usual 50–950 scale (built around
@@ -11,7 +11,7 @@
  * than a Tailwind class.
  */
 module.exports = {
-  name: 'SaleDM',
+  name: 'InstaSale',
   primary: '#C13584',
   palette: {
     50: '#FDF1F7',

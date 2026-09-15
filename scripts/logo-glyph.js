@@ -1,6 +1,6 @@
 /**
  * Shared glyph parser/rasterizer for assets/logo.svg — the editable
- * source for SaleDM's speech-bubble-and-bolt mark (introduced 2026-09-10
+ * source for InstaSale's speech-bubble-and-bolt mark (introduced 2026-09-10
  * to replace hand-tweaking six derived PNGs independently; see the
  * comment block at the top of assets/logo.svg for the shape's own design
  * history/rationale). Used by both generate-app-icons.js and

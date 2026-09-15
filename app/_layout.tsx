@@ -1,13 +1,18 @@
 import '../global.css';
 import { Slot, useRouter, useSegments } from 'expo-router';
+import * as SplashScreen from 'expo-splash-screen';
 import { useEffect } from 'react';
 import { AuthProvider, useAuth } from '@/context/AuthContext';
-import Splash from '@/components/Splash';
 import { subscribeToNotificationTaps } from '@/services/notifications';
 
 /**
  * Onboarding gate, in order:
- *   1. Splash             — shown while AuthContext resolves the stored token
+ *   1. Native splash       — held open (index.ts's preventAutoHideAsync())
+ *      through this whole step, covering AuthContext resolving the stored
+ *      token; there's deliberately no separate JS splash screen of our own
+ *      here anymore (removed 2026-09-11 — see components/Splash.tsx's
+ *      removal) — one native splash, extended, beats a native splash
+ *      handing off into a look-alike JS one.
  *   2. (auth)/scan         — not signed in → scan a QR code shown on the
  *      already-authenticated Branzia web dashboard (no Login/Register form
  *      exists in this app — see (auth)/scan.tsx)
@@ -26,6 +31,23 @@ function RootLayoutNav() {
   const { token, isLoading, isInstagramConnected } = useAuth();
   const segments = useSegments();
   const router = useRouter();
+
+  // Hands off from the native splash (held open by index.ts's
+  // preventAutoHideAsync()) once we've actually landed on a real
+  // destination screen — NOT just once AuthContext has resolved. Bare "/"
+  // (app/index.tsx, which renders null) has empty segments; the redirect
+  // effect below only reaches a real (auth)/(onboarding)/(tabs) screen a
+  // tick or two later. Hiding on `isLoading` alone (2026-09-11's first cut
+  // at this) revealed that gap as a plain gray blank — index.tsx's null,
+  // with nothing left to cover it — on a real device. Waiting for a
+  // non-empty segments array means the splash stays up until there's
+  // something real underneath it.
+  useEffect(() => {
+    if (isLoading) return;
+    const parts = segments as readonly string[];
+    if (parts.length === 0) return;
+    SplashScreen.hideAsync();
+  }, [isLoading, segments]);
 
   useEffect(() => {
     if (isLoading) return;
@@ -68,7 +90,9 @@ function RootLayoutNav() {
     return subscribeToNotificationTaps((route) => router.push(route as any));
   }, [fullyOnboarded]);
 
-  if (isLoading) return <Splash />;
+  // No JS-rendered loading UI here — the native splash above is still on
+  // screen for the entirety of `isLoading`, so this is never visible.
+  if (isLoading) return null;
 
   return <Slot />;
 }

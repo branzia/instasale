@@ -157,7 +157,12 @@ export default function Posts() {
                       className={`px-3.5 py-1.5 rounded-full ${active ? 'bg-brand-500' : 'bg-gray-100'}`}
                     >
                       <Text className={`text-xs font-semibold ${active ? 'text-white' : 'text-gray-600'}`}>
-                        {f.label} ({counts[f.value]})
+                        {/* Counts are over already-loaded items only — Instagram's Graph
+                            API cursor pagination has no true total to show upfront (unlike
+                            Leads/Orders' `total` field). While more pages remain (nextCursor
+                            set), show "N+" rather than a number that visibly climbs as the
+                            list is scrolled and reads like a moving, unreliable total. */}
+                        {f.label} ({counts[f.value]}{nextCursor ? '+' : ''})
                       </Text>
                     </Pressable>
                   );

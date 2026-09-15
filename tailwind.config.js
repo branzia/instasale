@@ -7,7 +7,7 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        // SaleDM brand palette (Instagram magenta) — replaces indigo
+        // InstaSale brand palette (Instagram magenta) — replaces indigo
         // throughout the app. Edit config/brand.js to change it everywhere
         // at once. The real multi-stop gradient lives in config/brand.js's
         // `gradient`/`gradientShort` exports for use with

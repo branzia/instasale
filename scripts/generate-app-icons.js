@@ -1,8 +1,9 @@
 /**
  * Rasterizes assets/logo.svg into every app-bundled brand asset:
- * icon.png, favicon.png, splash-icon.png, android-icon-foreground.png,
- * android-icon-monochrome.png, logo-mark.png (the in-UI badge Splash.tsx
- * and (onboarding)/instagram-required.tsx both render).
+ * icon.png, favicon.png, android-icon-foreground.png,
+ * android-icon-monochrome.png, logo-mark.png (the in-UI badge
+ * (onboarding)/instagram-required.tsx renders, and — since 2026-09-11 —
+ * app.config.js's native splash config too).
  *
  * Run after editing assets/logo.svg: `npm run generate:app-icons`
  * (an optional first arg overrides the output prefix, for previewing
@@ -46,12 +47,6 @@ writeAndLog(outPrefix + 'favicon.png', makePng(196, (x, y) => {
   const [gr, gg, gb] = gradientColor(t);
   const cov = glyphCoverage(x, y, 196);
   return [Math.round(gr + (255 - gr) * cov), Math.round(gg + (255 - gg) * cov), Math.round(gb + (255 - gb) * cov), 255];
-}));
-
-const MAGENTA = [0xC1, 0x35, 0x84];
-writeAndLog(outPrefix + 'splash-icon.png', makePng(1024, (x, y) => {
-  const cov = glyphCoverage(x, y, 1024);
-  return [Math.round(255 + (MAGENTA[0] - 255) * cov), Math.round(255 + (MAGENTA[1] - 255) * cov), Math.round(255 + (MAGENTA[2] - 255) * cov), 255];
 }));
 
 writeAndLog(outPrefix + 'android-icon-foreground.png', makePng(1024, (x, y) => {

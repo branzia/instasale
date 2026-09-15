@@ -6,7 +6,7 @@ import { ui } from '@/config';
 /**
  * Small icon-circle + title + body row, inside a Card shell — extracted
  * 2026-09-10 from (auth)/scan.tsx (its original single caller, "What
- * SaleDM does for you") so (onboarding)/instagram-required.tsx can reuse
+ * InstaSale does for you") so (onboarding)/instagram-required.tsx can reuse
  * the same treatment for its own "Why connect Instagram" section without
  * duplicating the row markup a second time.
  */

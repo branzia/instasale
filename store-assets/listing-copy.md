@@ -5,7 +5,7 @@ project's own `CLAUDE.md` ("Built" list). Edit freely before pasting into
 Play Console — these are a starting point, not final copy.
 
 ## App name (30 char max)
-SaleDM
+InstaSale
 
 ## Short description (80 char max)
 Turn Instagram DMs into sales — comment & DM automation, leads, payments
@@ -14,13 +14,13 @@ Turn Instagram DMs into sales — comment & DM automation, leads, payments
 
 ## Full description (4000 char max)
 
-SaleDM runs Branzia's Instagram Automation from your phone — comment
+InstaSale runs Branzia's Instagram Automation from your phone — comment
 automation, a DM chatbot, Lead to Sale, and payments, all synced with
 your Branzia web dashboard.
 
 SIGN IN WITHOUT A PASSWORD
 Open branzia.app/instagram on the web, tap "Connect Mobile App," and
-scan the code with SaleDM. No email, no password — just a quick scan.
+scan the code with InstaSale. No email, no password — just a quick scan.
 
 COMMENT & DM AUTOMATION
 Auto-replies handle Instagram comments and DMs on your posts and reels
